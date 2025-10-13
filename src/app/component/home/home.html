@@ -1,0 +1,37 @@
+<p *ngIf="msg">{{ msg }}</p>
+<p>{{currentdir}}</p>
+<button (click)="goBack()">Back</button>    
+<hr/>
+<button type="button" (click)="fileInput.click()">Upload</button>
+<input type="file" #fileInput hidden (change)="uploadFile($event)">
+<div *ngIf="uploadProgress > 0">
+  Uploading: {{ uploadProgress }}%
+  <progress [value]="uploadProgress" max="100"></progress>
+</div>
+<button type = "button" (click)="getName()">New Folder</button>
+<div [hidden]="showfolder">
+    <form (submit)="createFolder()">
+        <label for="foldername">Name</label>
+        <input type="text" id="foldername"[(ngModel)]="foldername" required>
+        <button type = "submit">Create</button>
+    </form>
+</div>
+<hr/>
+<form>
+    <input type="text" id="currentdir" [(ngModel)]="currentdir" name="currentdir" hidden>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Action</th>
+        </tr>
+        <tr *ngFor="let file of files">
+            <td>{{file.name}}</td>
+            <td>{{file.isDir ? "Folder" : "File"}}</td>
+            <td>
+                <button type="button" *ngIf="file.isDir" (click)="openDir(file.name)">Go inside</button>
+                <button type="button" *ngIf="!file.isDir" (click)="downloadFile(file.name)">Download</button>
+            </td>
+        </tr>
+    </table>
+</form>
