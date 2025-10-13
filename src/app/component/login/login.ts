@@ -3,8 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Middle } from '../../service/middle';
 import { Router } from '@angular/router';
 
-
-//adding this comment to know my git push works
+//heyo, we are on git
 @Component({
   selector: 'app-login',
   imports: [FormsModule],
