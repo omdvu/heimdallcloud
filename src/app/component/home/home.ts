@@ -88,7 +88,7 @@ export class Home {
   }
   downloadFile(filename:string){
     const token = sessionStorage.getItem('token');
-    const url = `${this.middle.api}/download?token=${token}path=${encodeURIComponent(this.currentdir + '/' + filename)}`;
+    const url = `${this.middle.api}/download?token=${token}&path=${encodeURIComponent(this.currentdir + '/' + filename)}`;
     window.location.href = url;
   }
 
