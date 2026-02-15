@@ -23,10 +23,13 @@ export class Layout {
     }
   }
 
-  logout(){
-    this.middle.logout();
+  logout() {
+    const token = sessionStorage.getItem('token');
+    if (token) this.middle.logout().subscribe();
     sessionStorage.removeItem('user');
     sessionStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
     this.router.navigate(['/login']);
   }
 }

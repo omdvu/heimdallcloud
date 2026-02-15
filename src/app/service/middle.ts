@@ -12,12 +12,12 @@ export class Middle {
   getToken(){
     return sessionStorage.getItem('token');
   }
-
   login(credentials: any): Observable<any> {
     return this.http.post(`${this.api}/login`, credentials, { withCredentials: true });
   }
   logout(): Observable<any> {
-    return this.http.post(`${this.api}/logout`, { withCredentials: true });
+    const token = this.getToken();
+    return this.http.post(`${this.api}/logout?token=${token || ''}`, {}, { withCredentials: true });
   }
   getFiles(dir?: string): Observable<any> {
     console.log("requested path is", dir)

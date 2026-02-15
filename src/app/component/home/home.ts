@@ -18,6 +18,7 @@ export class Home {
   msg: string = '';
   showfolder: boolean = true;
   foldername:string = '';
+  navLoading = false;
 
   ngOnInit(){
     const user = sessionStorage.getItem('user');
@@ -30,26 +31,31 @@ export class Home {
   }
 
   loadFiles(){
-    console.log("loading files")
-    let files = this.middle.getFiles(this.currentdir).subscribe({
+    this.msg = '';
+    this.middle.getFiles(this.currentdir).subscribe({
       next : (result) => {
         this.files = result;
         if(this.files.length == 0){
-          this.msg = "This directory is empty!";
+          this.msg = "This directory is empty.";
         }
+        this.navLoading = false;
       },
       error: (err) => {
-        this.msg = "Failed to load files, please contact Om";
+        this.msg = "Failed to load files. Please try again.";
+        this.navLoading = false;
       }
     });
   }
 
-  openDir(dirname:string) {
+  openDir(dirname: string) {
+    if (this.navLoading) return;
+    this.navLoading = true;
     this.currentdir = `${this.currentdir}/${dirname}`;
     this.loadFiles();
   }
 
-  goBack(){
+  goBack() {
+    if (this.navLoading) return;
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
     const userHome = `/home/${user.username}`;
 
@@ -58,6 +64,7 @@ export class Home {
     const newDir = parts.join('/') || userHome;
     this.currentdir = newDir.startsWith(userHome) ? newDir : userHome;
 
+    this.navLoading = true;
     this.loadFiles();
   }
   
@@ -97,11 +104,11 @@ export class Home {
     this.showfolder = true;
     this.middle.createDir(token,this.currentdir,this.foldername).subscribe({
       next: (result) => {
-        this.msg = "Created Folder!";
+        this.msg = "Folder created.";
         this.loadFiles();
       },
       error: (err) => {
-        this.msg = "Unable to create a folder!";
+        this.msg = "Could not create folder.";
         this.loadFiles();
       }
     });

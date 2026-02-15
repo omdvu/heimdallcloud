@@ -1,16 +1,17 @@
 <div class="login-container">
     <h2>Login</h2>
-    <form method="post">
+    <p class="login-msg login-msg--error" *ngIf="errorMsg">{{ errorMsg }}</p>
+    <form method="post" (submit)="submitLogin(); $event.preventDefault()">
         <div class="form-group">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" [(ngModel)]="loginData.username" required>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" [(ngModel)]="loginData.username" required autocomplete="username">
         </div>
         <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" [(ngModel)]="loginData.password" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" [(ngModel)]="loginData.password" required autocomplete="current-password">
         </div>
         <div class="form-group">
-            <button (click)="submitLogin()">Submit</button>
+            <button type="submit" class="btn btn--primary">Sign in</button>
         </div>
     </form>
 </div>

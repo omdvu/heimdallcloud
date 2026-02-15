@@ -1,4 +1,5 @@
-Welcome {{loggeduser}}
-<button (click)="logout()">Logout</button>
-<hr>
+<header class="header">
+  <p class="welcome">Welcome <strong>{{ loggeduser }}</strong></p>
+  <button type="button" class="logout-btn" (click)="logout()">Logout</button>
+</header>
 <router-outlet></router-outlet>
