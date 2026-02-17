@@ -18,6 +18,14 @@
     </form>
 </div>
 <hr/>
+
+<form class="media-files-wrap">
+    <div class="media-file" *ngFor="let file of mediafiles">
+        <img [src]="file.name" alt="Media File">
+        <button type="button" class="btn" (click)="downloadFile(file.name)">Download</button>
+    </div>
+</form>
+
 <form class="file-list-wrap">
     <input type="text" id="currentdir" [(ngModel)]="currentdir" name="currentdir" hidden>
     <table class="file-table">
@@ -33,7 +41,7 @@
                 <td>{{ file.name }}</td>
                 <td>{{ file.isDir ? "Folder" : "File" }}</td>
                 <td>
-                    <button type="button" class="btn btn-nav" *ngIf="file.isDir" (click)="openDir(file.name)" [disabled]="navLoading">Go inside</button>
+                    <button type="button" class="btn btn-nav" *ngIf="file.isDir" (click)="openDir(file.name)" [disabled]="navLoading">Open</button>
                     <button type="button" class="btn" *ngIf="!file.isDir" (click)="downloadFile(file.name)">Download</button>
                 </td>
             </tr>
