@@ -3,28 +3,6 @@
   padding: 0.5rem 0;
 }
 
-.media-files-wrap {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.media-file {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.5rem;
-}
-
-.media-file img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .msg {
   margin: 0 0 0.5rem;
   padding: 0.4rem 0.6rem;

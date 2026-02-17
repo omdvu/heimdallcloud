@@ -15,7 +15,6 @@ export class Home {
   uploadProgress:number = 0;
   currentdir: string = '';
   files : any[] = [];
-  mediafiles : any[] = [];
   msg: string = '';
   showfolder: boolean = true;
   foldername:string = '';
@@ -36,7 +35,6 @@ export class Home {
     this.middle.getFiles(this.currentdir).subscribe({
       next : (result) => {
         this.files = result;
-        this.mediafiles = this.files.filter(file => !file.name.endsWith('.png') && !file.name.endsWith('.jpg') && !file.name.endsWith('.jpeg'));
         if(this.files.length == 0){
           this.msg = "This directory is empty.";
         }
