@@ -87,6 +87,7 @@ export class Home {
   
   async uploadFile() {
     const chunkSize = 10*1024*1024;
+    this.uploadProgress = 0;
 
     for (let file of this.finalFiles) {
       const totalChunks = Math.ceil(file.size / chunkSize);
@@ -99,10 +100,12 @@ export class Home {
         formData.append('chunk', chunk);
         formData.append('chunkIndex', chunkIndex.toString());
         formData.append('totalChunks', totalChunks.toString());
+        formData.append('currentDir', this.currentdir);
         formData.append('filename', file.name);
 
         try {
           this.uploadProgress = Math.round(((chunkIndex + 1) / totalChunks) * 100);
+          this.cdrf.detectChanges();
           await this.middle.uploadFileWithProgress(formData).toPromise();
         } catch (err) {
           console.error(err);
