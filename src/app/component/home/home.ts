@@ -100,7 +100,7 @@ export class Home {
         formData.append('chunk', chunk);
         formData.append('chunkIndex', chunkIndex.toString());
         formData.append('totalChunks', totalChunks.toString());
-        formData.append('currentDir', this.currentdir);
+        formData.append('targetDir', this.currentdir);
         formData.append('filename', file.name);
 
         try {
