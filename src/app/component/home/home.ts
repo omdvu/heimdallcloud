@@ -85,8 +85,8 @@ export class Home {
       }
       this.allFiles += text + "\n";
     }
-    this.loadFiles();
     this.uploadFile();
+    this.loadFiles();
   }
   
   async uploadFile() {

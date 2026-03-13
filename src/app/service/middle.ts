@@ -20,7 +20,6 @@ export class Middle {
     return this.http.post(`${this.api}/logout?token=${token || ''}`, {}, { withCredentials: true });
   }
   getFiles(dir?: string): Observable<any> {
-    console.log("requested path is", dir)
     return this.http.get(`${this.api}/filelogs?token=${this.getToken()}`, {
       params: { path: dir || '' },
       withCredentials: true
