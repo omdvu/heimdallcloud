@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { Middle } from '../../service/middle';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { HttpEventType } from '@angular/common/http';
+import { ChangeDetectorRef } from '@angular/core';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -11,7 +12,7 @@ import { HttpEventType } from '@angular/common/http';
   styleUrl: './home.css'
 })
 export class Home {
-  constructor(private middle:Middle) {}
+  constructor(private middle:Middle, private cdrf: ChangeDetectorRef) {}
   uploadProgress:number = 0;
   currentdir: string = '';
   files : any[] = [];
@@ -75,50 +76,43 @@ export class Home {
     const files: FileList = event.target.files;
 
     for (let file of Array.from(files)) {
-
       let sizeInMb = Number((file.size / (1024*1024)).toFixed(2));
-      let text = file.name + ":" + sizeInMb;
-      if (sizeInMb > 140) {
-        text += ":" + "File size too big, not accepted!";
-      }
-      else {
-        this.finalFiles.push(file);
-      }
-      this.allFiles += text + "\n";
+      let text = file.name + " : " + sizeInMb + "MB" + "<br>";
+      this.finalFiles.push(file);
+      this.allFiles += text;
     }
-    this.loadFiles();
+    this.cdrf.detectChanges();
     this.uploadFile();
   }
   
   async uploadFile() {
-  const chunkSize = 40*1024*1024;
+    const chunkSize = 10*1024*1024;
 
-  for (let file of this.finalFiles) {
-    const totalChunks = Math.ceil(file.size / chunkSize);
-    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      const start = chunkIndex * chunkSize;
-      const end = Math.min(start + chunkSize, file.size);
-      const chunk = file.slice(start, end);
+    for (let file of this.finalFiles) {
+      const totalChunks = Math.ceil(file.size / chunkSize);
+      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+        const start = chunkIndex * chunkSize;
+        const end = Math.min(start + chunkSize, file.size);
+        const chunk = file.slice(start, end);
 
-      const formData = new FormData();
-      formData.append('chunk', chunk);
-      formData.append('chunkIndex', chunkIndex.toString());
-      formData.append('totalChunks', totalChunks.toString());
-      formData.append('filename', file.name);
+        const formData = new FormData();
+        formData.append('chunk', chunk);
+        formData.append('chunkIndex', chunkIndex.toString());
+        formData.append('totalChunks', totalChunks.toString());
+        formData.append('filename', file.name);
 
-      try {
-        await this.middle.uploadFileWithProgress(formData).toPromise();
-        // per-file progress
-        this.uploadProgress = Math.round(((chunkIndex + 1) / totalChunks) * 100);
-      } catch (err) {
-        console.error(err);
-        return;
+        try {
+          this.uploadProgress = Math.round(((chunkIndex + 1) / totalChunks) * 100);
+          await this.middle.uploadFileWithProgress(formData).toPromise();
+        } catch (err) {
+          console.error(err);
+          return;
+        }
       }
+      this.uploadProgress = 0;
     }
-    this.uploadProgress = 0;
+    this.loadFiles(); 
   }
-  this.loadFiles(); 
-}
 
   downloadFile(filename:string){
     const token = sessionStorage.getItem('token');
