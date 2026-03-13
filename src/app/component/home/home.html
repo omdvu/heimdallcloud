@@ -3,7 +3,7 @@
 <div class="toolbar">
   <button type="button" class="btn btn-nav" (click)="goBack()" [disabled]="navLoading">Back</button>
   <button type="button" class="btn" (click)="fileInput.click()">Upload</button>
-  <input type="file" #fileInput hidden (change)="fileSelected($event)">
+  <input type="file" #fileInput multiple hidden (change)="fileSelected($event)">
   <button type="button" class="btn" (click)="getName()">New Folder</button>
 </div>
 <div class="upload-progress" *ngIf="uploadProgress > 0">
