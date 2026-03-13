@@ -71,8 +71,13 @@ export class Home {
   }
 
   fileSelected(event: any) {
+    console.log("selected");
     const files: FileList = event.target.files;
-    for (let file of files) {
+    console.log(files);
+
+    for (let file of Array.from(files)) {
+      console.log(file);
+
       let sizeInMb = Number((file.size / (1024*1024)).toFixed(2));
       let text = file.name + ":" + sizeInMb;
       if (sizeInMb > 140) {
@@ -83,13 +88,15 @@ export class Home {
       }
       this.allFiles += text + "\n";
     }
+    console.log(this.finalFiles);
   }
   
   async uploadFile() {
     const chunkSize = 40*1024*1024;
     const files = this.finalFiles;
 
-    for (let file of files) {
+    for (let file of Array.from(files)) {
+      console.log(file);
       const totalChunks = Math.ceil(file.size/chunkSize);
 
       for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
