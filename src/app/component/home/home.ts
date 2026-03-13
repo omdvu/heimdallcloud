@@ -71,6 +71,7 @@ export class Home {
   }
 
   fileSelected(event: any) {
+    this.finalFiles = [];
     const files: FileList = event.target.files;
 
     for (let file of Array.from(files)) {
@@ -85,43 +86,39 @@ export class Home {
       }
       this.allFiles += text + "\n";
     }
-    this.uploadFile();
     this.loadFiles();
+    this.uploadFile();
   }
   
   async uploadFile() {
-    const chunkSize = 40*1024*1024;
-    const files = this.finalFiles;
+  const chunkSize = 40*1024*1024;
 
-    for (let file of Array.from(files)) {
-      const totalChunks = Math.ceil(file.size/chunkSize);
+  for (let file of this.finalFiles) {
+    const totalChunks = Math.ceil(file.size / chunkSize);
+    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      const start = chunkIndex * chunkSize;
+      const end = Math.min(start + chunkSize, file.size);
+      const chunk = file.slice(start, end);
 
-      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-        const start = chunkIndex*chunkSize;
-        const end = Math.min(start + chunkSize, file.size);
+      const formData = new FormData();
+      formData.append('chunk', chunk);
+      formData.append('chunkIndex', chunkIndex.toString());
+      formData.append('totalChunks', totalChunks.toString());
+      formData.append('filename', file.name);
 
-        const chunk = file.slice(start,end);
-        
-        const formData = new FormData();
-
-        formData.append('chunk', chunk);
-        formData.append('chunkIndex', chunkIndex.toString());
-        formData.append('chunkSize', chunkSize.toString());
-        formData.append('filename', file.name);
-
-        try {
-          await this.middle.uploadFileWithProgress(formData).toPromise();
-          this.uploadProgress = Math.round(((chunkIndex+1)/totalChunks) * 100)
-        }
-        catch (err) {
-          console.error(err);
-          return;
-        }
+      try {
+        await this.middle.uploadFileWithProgress(formData).toPromise();
+        // per-file progress
+        this.uploadProgress = Math.round(((chunkIndex + 1) / totalChunks) * 100);
+      } catch (err) {
+        console.error(err);
+        return;
       }
-      this.loadFiles();
     }
     this.uploadProgress = 0;
   }
+  this.loadFiles(); 
+}
 
   downloadFile(filename:string){
     const token = sessionStorage.getItem('token');
