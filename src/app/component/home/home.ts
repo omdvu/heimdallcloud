@@ -18,6 +18,8 @@ export class Home {
   msg: string = '';
   showfolder: boolean = true;
   foldername:string = '';
+  allFiles: string = '';
+  finalFiles: File[] = [];
   navLoading = false;
 
   ngOnInit(){
@@ -67,32 +69,56 @@ export class Home {
     this.navLoading = true;
     this.loadFiles();
   }
-  
-  uploadFile(event: any) {
-    const file = event.target.files[0];
-    if (!file) return;
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('targetDir', this.currentdir);
-
-    this.middle.uploadFileWithProgress(formData).subscribe({
-      next: (event: any) => {
-        if (event.type === HttpEventType.UploadProgress) {
-          const percentDone = Math.round(100 * event.loaded / event.total);
-          console.log('Upload Progress: ' + percentDone + '%');
-          this.uploadProgress = percentDone;
-        } else if (event.type === HttpEventType.Response) {
-          console.log('Upload complete!', event.body);
-          this.uploadProgress = 0;
-          this.loadFiles();
-        }
-      },
-      error: (err) => {
-        console.error('Upload failed', err);
+  fileSelected(event: any) {
+    const files: FileList = event.target.files;
+    for (let file of files) {
+      let sizeInMb = Number((file.size / (1024*1024)).toFixed(2));
+      let text = file.name + ":" + sizeInMb;
+      if (sizeInMb > 140) {
+        text += ":" + "File size too big, not accepted!";
       }
-    });
+      else {
+        this.finalFiles.push(file);
+      }
+      this.allFiles += text + "\n";
+    }
   }
+  
+  async uploadFile() {
+    const chunkSize = 40*1024*1024;
+    const files = this.finalFiles;
+
+    for (let file of files) {
+      const totalChunks = Math.ceil(file.size/chunkSize);
+
+      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+        const start = chunkIndex*chunkSize;
+        const end = Math.min(start + chunkSize, file.size);
+
+        const chunk = file.slice(start,end);
+        
+        const formData = new FormData();
+
+        formData.append('chunk', chunk);
+        formData.append('chunkIndex', chunkIndex.toString());
+        formData.append('chunkSize', chunkSize.toString());
+        formData.append('filename', file.name);
+
+        try {
+          await this.middle.uploadFileWithProgress(formData).toPromise();
+          this.uploadProgress = Math.round(((chunkIndex+1)/totalChunks) * 100)
+        }
+        catch (err) {
+          console.error(err);
+          return;
+        }
+      }
+      this.loadFiles();
+    }
+    this.uploadProgress = 0;
+  }
+
   downloadFile(filename:string){
     const token = sessionStorage.getItem('token');
     const url = `${this.middle.api}/download?token=${token}&path=${encodeURIComponent(this.currentdir + '/' + filename)}`;
