@@ -25,8 +25,8 @@ export class Middle {
       withCredentials: true
     });
   }
-  uploadFileWithProgress(formData: FormData) {
-    const req = new HttpRequest('POST', `${this.api}/upload?token=${this.getToken()}`, formData, {
+  uploadFileWithProgress(formData: FormData, dir: any) {
+    const req = new HttpRequest('POST', `${this.api}/upload?token=${this.getToken()}&path=${dir}`, formData, {
       reportProgress: true,
       withCredentials: true
     });

@@ -100,13 +100,13 @@ export class Home {
         formData.append('chunk', chunk);
         formData.append('chunkIndex', chunkIndex.toString());
         formData.append('totalChunks', totalChunks.toString());
-        formData.append('targetDir', this.currentdir);
+        formData.append('currentDir', this.currentdir);
         formData.append('filename', file.name);
 
         try {
           this.uploadProgress = Math.round(((chunkIndex + 1) / totalChunks) * 100);
           this.cdrf.detectChanges();
-          await this.middle.uploadFileWithProgress(formData).toPromise();
+          await this.middle.uploadFileWithProgress(formData,this.currentdir).toPromise();
         } catch (err) {
           console.error(err);
           return;
